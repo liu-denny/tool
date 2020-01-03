@@ -40,8 +40,16 @@ public class ExcelReaderUtils {
     //实际已读取的行数
     private int index = 0;
 
+    public ExcelReaderUtils(File file){
+        this(file,0,0,100);
+    }
+
+    public ExcelReaderUtils(File file,int sheetIndex){
+        this(file,sheetIndex,0,100);
+    }
+
     public ExcelReaderUtils(File file,int sheetIndex,int skipSize){
-        new ExcelReaderUtils(file,sheetIndex,skipSize,100);
+        this(file,sheetIndex,skipSize,100);
     }
 
     public ExcelReaderUtils(File file,int sheetIndex,int skipSize,int batchSize){
@@ -63,7 +71,7 @@ public class ExcelReaderUtils {
                 .rowCacheSize(1000)    // number of rows to keep in memory (defaults to 10)
                 .bufferSize(204800)     // buffer size to use when reading InputStream to file (defaults to 1024)
                 .open(inputStream);
-        sheet = workbook.getSheetAt(sheetIndex);
+        this.sheet = workbook.getSheetAt(sheetIndex);
     }
 
 
@@ -78,20 +86,22 @@ public class ExcelReaderUtils {
             title = new LinkedList<String>();
             for(Row row :sheet){
                 for(int titleIndex = row.getFirstCellNum();
-                    titleIndex <= row.getLastCellNum();
+                    titleIndex < row.getLastCellNum();
                     titleIndex++){
 
-                    title.add(String.valueOf(row.getCell(titleIndex)));
+                    title.add(String.valueOf(getValue(row.getCell(titleIndex))));
                 }
                 //只遍历第一行
                 break;
             }
+            index++;
         }
 
         //文件结尾
-        if(index > sheet.getLastRowNum()) {
-            return null;
-        }
+//        int j = sheet.getLastRowNum();
+//        if(index > sheet.getLastRowNum()) {
+//            return null;
+//        }
 
         int bachIdx = 0;
         List<Map<String, Object>> lines = new LinkedList<>();
@@ -101,7 +111,7 @@ public class ExcelReaderUtils {
             Map<String,Object> line = new HashMap<>();
             int startNum = row.getFirstCellNum();
             for(int idx =0;idx < title.size();idx++){
-                line.put(title.get(idx),row.getCell(idx+startNum));
+                line.put(title.get(idx),getValue(row.getCell(idx+startNum)));
             }
             lines.add(line);
             index++;
@@ -126,6 +136,23 @@ public class ExcelReaderUtils {
     }
 
     public List<String> getTitle() {
+        //读取标题
+        if(title == null){
+            title = new LinkedList<String>();
+
+            for(Row row :sheet){
+                int j = row.getLastCellNum();
+                for(int titleIndex = row.getFirstCellNum();
+                    titleIndex < row.getLastCellNum();
+                    titleIndex++){
+
+                    title.add(String.valueOf(getValue(row.getCell(titleIndex))));
+                }
+                //只遍历第一行
+                break;
+            }
+            index++;
+        }
         return title;
     }
 
@@ -145,7 +172,7 @@ public class ExcelReaderUtils {
             return value;
         }else {
             String style = cell.getCellStyle().getDataFormatString();
-            switch (cell.getCellType()) {
+            switch (cell.getCellType().getCode()) {
                 case 0:
                     double numeric = cell.getNumericCellValue();
                     if("@".equals(style)){
