@@ -1,8 +1,4 @@
 import lombok.Data;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -20,14 +16,14 @@ import java.util.List;
  * @create 2019-12-10 14:32
  */
 @Data
-public class ExcelWriteUtils {
+public class ExcelWriterV2Utils {
     private static int num;
 
-    public ExcelWriteUtils(int num) {
+    public ExcelWriterV2Utils(int num) {
         this.num = num;
     }
 
-    public ExcelWriteUtils() {
+    public ExcelWriterV2Utils() {
         this.num = 0;
     }
 

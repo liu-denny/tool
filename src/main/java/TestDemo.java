@@ -36,10 +36,12 @@ public class TestDemo {
 
     public void TestExcelReader(){
         File file = new File("D:\\tool\\src\\main\\resources\\test.xlsx");
-        ExcelReaderUtils excelReaderUtils = new ExcelReaderUtils(file);
+        ExcelReaderUtils excelReaderUtils = new ExcelReaderUtils(file,0,2);
         List<Map<String, Object>> values =  excelReaderUtils.getLines();
+        values =  excelReaderUtils.getLines();
         for (Map<String, Object> value : values) {
             System.out.println(value.get("t1"));
         }
+
     }
 }

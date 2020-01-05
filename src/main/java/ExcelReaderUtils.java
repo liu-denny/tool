@@ -26,8 +26,7 @@ public class ExcelReaderUtils {
     private File file;
     //表序号
     private int sheetIndex;
-    //需要跳过的TOP N行
-    private int skipSize;
+
     //一次读取数量
     private int batchSize;
 
@@ -35,27 +34,22 @@ public class ExcelReaderUtils {
     private Sheet sheet;
 
     //标题
-    private List<String> title;
+    private LinkedList<String> title;
 
     //实际已读取的行数
     private int index = 0;
 
     public ExcelReaderUtils(File file){
-        this(file,0,0,100);
+        this(file,0,100);
     }
 
     public ExcelReaderUtils(File file,int sheetIndex){
-        this(file,sheetIndex,0,100);
+        this(file,sheetIndex,100);
     }
 
-    public ExcelReaderUtils(File file,int sheetIndex,int skipSize){
-        this(file,sheetIndex,skipSize,100);
-    }
-
-    public ExcelReaderUtils(File file,int sheetIndex,int skipSize,int batchSize){
+    public ExcelReaderUtils(File file,int sheetIndex,int batchSize){
         this.file = file;
         this.sheetIndex = sheetIndex;
-        this.skipSize = skipSize;
         this.batchSize = batchSize;
 
         //open excel file
@@ -76,37 +70,20 @@ public class ExcelReaderUtils {
 
 
     public List<Map<String, Object>> getLines(){
-        // 跳过前面的行数
-        while (index < skipSize) {
-            index++;
-        }
 
         //读取标题
         if(title == null){
-            title = new LinkedList<String>();
-            for(Row row :sheet){
-                for(int titleIndex = row.getFirstCellNum();
-                    titleIndex < row.getLastCellNum();
-                    titleIndex++){
-
-                    title.add(String.valueOf(getValue(row.getCell(titleIndex))));
-                }
-                //只遍历第一行
-                break;
-            }
-            index++;
+            this.addTitle();
         }
 
         //文件结尾
-//        int j = sheet.getLastRowNum();
-//        if(index > sheet.getLastRowNum()) {
-//            return null;
-//        }
-
+        if(index > sheet.getLastRowNum()) {
+            return null;
+        }
         int bachIdx = 0;
         List<Map<String, Object>> lines = new LinkedList<>();
-
         for(Row row:sheet){
+
             //行转map
             Map<String,Object> line = new HashMap<>();
             int startNum = row.getFirstCellNum();
@@ -125,23 +102,12 @@ public class ExcelReaderUtils {
 
     }
 
-    public void cleanUp() {
-        if (inputStream != null) {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-
-            }
-        }
-    }
-
-    public List<String> getTitle() {
+    public void addTitle() {
         //读取标题
         if(title == null){
             title = new LinkedList<String>();
 
             for(Row row :sheet){
-                int j = row.getLastCellNum();
                 for(int titleIndex = row.getFirstCellNum();
                     titleIndex < row.getLastCellNum();
                     titleIndex++){
@@ -153,16 +119,50 @@ public class ExcelReaderUtils {
             }
             index++;
         }
+    }
+
+    public LinkedList<String> getTitle() {
+        if(title == null){
+            this.addTitle();
+        }
         return title;
     }
 
     /**
-     * CELL_TYPE_NUMERIC　　数值型　　0
-     * CELL_TYPE_STRING　　 字符串型　1
-     * CELL_TYPE_FORMULA　　公式型   2
-     * CELL_TYPE_BLANK　　  空值　　　3
-     * CELL_TYPE_BOOLEAN　　布尔型　　4
-     * CELL_TYPE_ERROR　　  错误　　　5
+     * 获取当前读到第几行（包括标题）
+     * @return
+     */
+    public int getIndex() {
+        return index;
+    }
+
+    /**
+     * 获取当前Sheet的名字
+     * @return
+     */
+    public String getSheetName(){
+        return sheet.getSheetName();
+    }
+
+    /**
+     * 回收资源
+     */
+    public void cleanUp() {
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+
+            }
+        }
+    }
+
+    /**
+     * NUMERIC　　数值型　　
+     * STRING　　 字符串型　
+     * FORMULA　　公式型
+     * BLANK　　  空值　　　
+     * BOOLEAN　　布尔型　　
      * @param cell
      * @return
      */
@@ -172,8 +172,8 @@ public class ExcelReaderUtils {
             return value;
         }else {
             String style = cell.getCellStyle().getDataFormatString();
-            switch (cell.getCellType().getCode()) {
-                case 0:
+            switch (cell.getCellType()) {
+                case NUMERIC:
                     double numeric = cell.getNumericCellValue();
                     if("@".equals(style)){
                         value =  df.format(numeric);
@@ -185,16 +185,16 @@ public class ExcelReaderUtils {
                         value = numeric;
                     }
                     break;
-                case 1:
+                case STRING:
                     value = cell.getStringCellValue();
                     break;
-                case 2:
+                case FORMULA:
                     value = cell.toString();
                     break;
-                case 3:
+                case BLANK:
                     value = "";
                     break;
-                case 4:
+                case BOOLEAN:
                     value = cell.getBooleanCellValue();
             }
             return value;
