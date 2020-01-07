@@ -26,6 +26,8 @@ public class ExcelReaderUtils {
     private File file;
     //表序号
     private int sheetIndex;
+    //需要跳过的行数(标题为第一行)
+    private int skipSize;
 
     //一次读取数量
     private int batchSize;
@@ -68,12 +70,24 @@ public class ExcelReaderUtils {
         this.sheet = workbook.getSheetAt(sheetIndex);
     }
 
+    public void setSkipSize(int skipSize) {
+        this.skipSize = skipSize;
+    }
 
     public List<Map<String, Object>> getLines(){
+
 
         //读取标题
         if(title == null){
             this.addTitle();
+        }
+
+        while (index < skipSize){
+            // 读取并跳过一行
+            for (Row row : sheet) {
+                break;
+            }
+            index++;
         }
 
         //文件结尾
@@ -105,7 +119,7 @@ public class ExcelReaderUtils {
     public void addTitle() {
         //读取标题
         if(title == null){
-            title = new LinkedList<String>();
+            title = new LinkedList<>();
 
             for(Row row :sheet){
                 for(int titleIndex = row.getFirstCellNum();
