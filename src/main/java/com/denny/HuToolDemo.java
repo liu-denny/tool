@@ -1,6 +1,7 @@
+package com.denny;
+
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.poi.excel.BigExcelWriter;
 import cn.hutool.poi.excel.ExcelUtil;
 import cn.hutool.poi.excel.ExcelWriter;
 
@@ -46,7 +47,7 @@ public class HuToolDemo {
         writer.write(rows2);
 
 
-        writer.setSheet("sheet1");
+        writer.setSheet("sheet3");
         Map<String, Object> row3 = new LinkedHashMap<>();
         row3.put("姓名", "王五");
         row3.put("年龄", 35);
