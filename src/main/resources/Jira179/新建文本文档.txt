@@ -1,0 +1,2 @@
+7my-mE5e3dlN
+nohup sh run.sh api > api.log &

@@ -2,6 +2,9 @@ package com.denny;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
+import com.denny.Utils.ExcelReader;
+import com.denny.Utils.ExcelReaderUtils;
+import com.denny.Utils.ExcelWriterUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,10 +36,26 @@ public class TestDemo {
 //        values[1][0] = "t2012";
 //        values[1][1] = "t2112";
 //        excelUtils.appendToExcel(path,"Sheet2",values,num);
-        TestDemo testDemo = new TestDemo();
+//        TestDemo testDemo = new TestDemo();
 //        testDemo.TestExcelReader();
 //        testDemo.TestExcelWrite();
-        testDemo.TestExcelReaderV1();
+//        testDemo.TestExcelReaderV1();
+//        List<String> portraitCrowd = Arrays.asList("点位基础信息|评估得分","点位基础信息|常驻人口");
+//        System.out.println(portraitCrowd.contains("点位基础信息|评估得分11"));
+//        cn.hutool.poi.excel.ExcelReader reader = ExcelUtil.getReader("C:\\Users\\20190327R2\\Desktop\\aa.xlsx",0);
+//        List<Map<String,Object>> readAll = reader.readAll();
+//        TestDemo testDemo = new TestDemo();
+//        System.out.println(testDemo.A());
+        String s = "22.798281288568, 113.57383699997051&22.798281288568, 113.57383699997051";
+        List<String> l = Arrays.asList(s.split("&"));
+        List<List<String>> r = new ArrayList<>();
+        l.forEach(i -> r.add(Arrays.asList(i)));
+        r.forEach(item -> System.out.println(item.toString()));
+    }
+
+    public String A(){
+        String fileName = this.getClass().getClassLoader().getResource("dataSort.txt").getPath();//获取文件路径  
+        return fileName;
     }
 
     public void TestExcelReader(){
