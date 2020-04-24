@@ -2,6 +2,7 @@ package com.denny;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
+import com.denny.Test.T;
 import com.denny.Utils.ExcelReader;
 import com.denny.Utils.ExcelReaderUtils;
 import com.denny.Utils.ExcelWriterUtils;
@@ -9,6 +10,8 @@ import com.denny.Utils.ExcelWriterUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @Description
@@ -46,11 +49,109 @@ public class TestDemo {
 //        List<Map<String,Object>> readAll = reader.readAll();
 //        TestDemo testDemo = new TestDemo();
 //        System.out.println(testDemo.A());
-        String s = "22.798281288568, 113.57383699997051&22.798281288568, 113.57383699997051";
-        List<String> l = Arrays.asList(s.split("&"));
-        List<List<String>> r = new ArrayList<>();
-        l.forEach(i -> r.add(Arrays.asList(i)));
-        r.forEach(item -> System.out.println(item.toString()));
+//        String s = "22.798281288568, 113.57383699997051&22.798281288568, 113.57383699997051";
+//        List<String> l = Arrays.asList(s.split("&"));
+//        List<List<String>> r = new ArrayList<>();
+//        l.forEach(i -> r.add(Arrays.asList(i)));
+//        r.forEach(item -> System.out.println(item.toString()));
+
+//        String s = "(2,t_stat_resident_profile_resident,值,大于,0,0&(3,t_stat_resident_profile_resident,值,大于,0,0&33,t_stat_resident_profile_resident,值,大于,0,0)|4,t_stat_resident_profile_work,值,大于,0,0)&5,price_mid_low,TGI,大于,100,0";
+//        String s = "333333(2,t_stat_resident_profile_resident,值,大于,0,0&(2,t_stat_resident_profile_resident,值,大于,0,0|2,t_stat_resident_profile_work,值,大于,0,0)&4,price_mid_low,TGI,大于,100,0)|1111";
+//        String s = "(2,t_stat_resident_profile_resident,值,大于,0,0&(2,t_stat_resident_profile_resident,值,大于,0,0|2,t_stat_resident_profile_work,值,大于,0,0))&4,price_mid_low,TGI,大于,100,0";
+//        TestDemo testDemo = new TestDemo();
+//        Map<String,List<Object>> map = testDemo.t(s);
+//        System.out.println(map);
+        List<String> sList = new LinkedList<>();
+        List<String> list = new LinkedList<>();
+        int start = 0;
+        int startFlag = 0;
+        int endFlag = 0;
+        int end = 0;
+        String s = "(1111(222)33)";
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                startFlag++;
+                if (startFlag == endFlag + 1) {
+                    start = i;
+                }
+            } else if (s.charAt(i) == ')') {
+                endFlag++;
+                if (endFlag == startFlag) {
+                    if(start > 1){
+                        if(start - (end-1) != 1){
+                            list.add(s.substring(end,start-1));
+                            sList.add(String.valueOf(s.charAt(start-1)));
+                        }
+
+                    }
+                    list.add(s.substring(start + 1, i));
+                    if(i < s.length()-1){
+                        sList.add(String.valueOf(s.charAt(i+1)));
+                    }
+                    end = i+2;
+                    if(i+2 < s.length()){
+                        String a = s.substring(i+2, s.length());
+                        if(!a.contains("(")){
+                            list.add(a);
+                        }
+                    }
+
+
+                }
+            }
+        }
+        list.forEach(i -> System.out.println(i));
+        sList.forEach(i -> System.out.printf(i));
+    }
+
+    public Map<String,List<Object>> t(String s){
+        List<Object> sList = new LinkedList<>();
+        List<Object> list = new LinkedList<>();
+        int start = 0;
+        int startFlag = 0;
+        int endFlag = 0;
+        int end = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                startFlag++;
+                if (startFlag == endFlag + 1) {
+                    start = i;
+                }
+            } else if (s.charAt(i) == ')') {
+                endFlag++;
+                if (endFlag == startFlag) {
+                    if(start > 1){
+                        if(start - (end-1) != 1){
+                            list.add(s.substring(end,start-1));
+                            sList.add(String.valueOf(s.charAt(start-1)));
+                        }
+
+                    }
+                    String aa = s.substring(start + 1, i);
+                    if(aa.contains("(") && aa.contains(")")){
+                        Map<String,List<Object>> map = t(aa);
+                        list.add(map);
+                    }
+                    list.add(s.substring(start + 1, i));
+                    if(i < s.length()-1){
+                        sList.add(String.valueOf(s.charAt(i+1)));
+                    }
+                    end = i+2;
+                    if(i+2 < s.length()){
+                        String a = s.substring(i+2, s.length());
+                        if(!a.contains("(")){
+                            list.add(a);
+                        }
+                    }
+
+
+                }
+            }
+        }
+        Map<String,List<Object>> map = new HashMap<>();
+        map.put("result",list);
+        map.put("relationship",sList);
+        return map;
     }
 
     public String A(){
