@@ -103,9 +103,13 @@ public class TestDemo {
 //        }
 //        list.forEach(i -> System.out.println(i));
 //        sList.forEach(i -> System.out.printf(i));
-        for (int i=0;i<21;i++){
-            System.out.println(IdUtil.simpleUUID());
-        }
+//        for (int i=0;i<21;i++){
+//            System.out.println(IdUtil.simpleUUID());
+//        }
+
+        String a = " 111";
+        a = a.trim();
+        System.out.println(a);
     }
 
     public Map<String,List<Object>> t(String s){

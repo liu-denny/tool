@@ -167,10 +167,16 @@ public class jira_129_1 {
     }
 
     public static void main(String[] args) {
-        Double latitude = 22.966905099887;
-        Double longitude = 113.327100586937;
+//        Double latitude = 23.110797418879;
+//        Double longitude = 113.32221471737098;
+//        113.327100586937,113.331986456503
+
+        Double latitude = 23.0;
+        Double longitude = 113.0;
+
         List<List<Double>> lists = getGridBoundary(latitude,longitude,500);
         for (List<Double> list : lists) {
+//            System.out.println(list.get(1) + "," + list.get(0));
             System.out.println(list.get(0) + "," + list.get(1));
         }
 //        List<Double> list = lists.get(0);

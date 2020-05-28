@@ -24,7 +24,7 @@ public class HuToolDemo {
 
     public void Excel(){
         // 通过工具类创建writer
-        ExcelWriter writer = ExcelUtil.getWriter("D:\\work\\tool\\src\\main\\resources\\t1.xlsx");
+        ExcelWriter writer = ExcelUtil.getWriter("D:\\t1.xlsx");
 
         Map<String, Object> row1 = new LinkedHashMap<>();
         row1.put("姓名", "张三");
